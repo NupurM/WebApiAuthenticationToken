@@ -13,8 +13,12 @@
 </head>
 <body class="container">
     <div class="col-sm-10 offset-1">
-        <button type="button" id="btnLoadEmployees" class="btn btn-outline-success">Load Employees</button>
-        <button type="button" id="btnLogOut" class="btn btn-outline-success float-right">Log Out</button>
+
+        <div class="row">
+            <button type="button" id="btnLoadEmployees" class="btn btn-outline-success col-sm-3">Load Employees</button>
+            <span id="spanUserName" class="text-muted col-sm-6 text-center"></span>
+            <button type="button" id="btnLogOut" class="btn btn-outline-success float-right col-sm-3">Log Out</button>
+        </div>
         <br />
         <br />
         <table id="tbl" class="table table-bordered d-none">
@@ -68,9 +72,13 @@
                 $('#divError').hide('fade');
             });
 
-            if (sessionStorage.getItem('accessToken') == null) {
+            if (localStorage.getItem('accessToken') == null) {
                 window.location.href = 'Login.html';
+            } else {
+                $('#spanUserName').text('UserName : ' + localStorage.getItem('userName'));
             }
+
+
 
             $('#btnLoadEmployees').click(function () {
                 $('#divError').hide('fade');
@@ -80,7 +88,7 @@
                     method: 'GET',
                     contentType: 'application/json',
                     headers: {
-                        authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
+                        authorization: 'Bearer ' + localStorage.getItem('accessToken')
                     },
                     success: function (data) {
                         $('#loadingGif').hide();
@@ -108,7 +116,7 @@
             });
 
             $('#btnLogOut').click(function () {
-                sessionStorage.removeItem('accessToken');
+                localStorage.removeItem('accessToken');
                 window.location.href = 'Login.html';
             });
         });

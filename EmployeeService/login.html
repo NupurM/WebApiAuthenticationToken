@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <title></title>
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .tenor-gif-embed {
+            width: 200px
+        }
+    </style>
 </head>
 <body class="container">
     <div class="col-sm-10 offset-1">
@@ -11,56 +16,41 @@
             <thead>
                 <tr class="bg-success text-light">
                     <td colspan="2">
-                        New User Registration
-                        <a class="btn btn-outline-light float-right" href="Login.html">Login</a>
+                        Existing User Login
+                        <a class="btn btn-outline-light float-right" href="Register.html">Register</a>
                     </td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Email</td>
-                    <td><input type="text" id="txtEmail" class="form-control" placeholder="Email" /></td>
+                    <td>Username</td>
+                    <td><input type="text" id="txtUsername" class="form-control" placeholder="Username" /></td>
                 </tr>
                 <tr>
                     <td>Password</td>
                     <td><input type="password" id="txtPassword" class="form-control" placeholder="Password" /></td>
                 </tr>
-                <tr>
-                    <td>Confirm Password</td>
-                    <td><input type="password" id="txtConfirmPassword" class="form-control" placeholder="Confirm Password" /></td>
-                </tr>
                 <tr class="bg-success">
                     <td colspan="2">
-                        <button type="submit" class="btn btn-outline-light" id="btnRegister">Register</button>
+                        <button type="submit" class="btn btn-outline-light" id="btnLogIn">LogIn</button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="modal fade" tabindex="-1" id="successModal"
-             data-keboard="false" data-backdrop="static">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4>Success</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <h2>Registration Successful!</h2>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div id="divError" class="alert alert-danger collapse">
             <a id="linkClose" class="close" href="#">&times;</a>
             <div id="divErrorText">Error</div>
         </div>
     </div>
+    <div id="loadingGif" style="display: none;">
+        <div class="tenor-gif-embed" data-postid="8985245" data-share-method="host" data-width="100%" data-aspect-ratio="1.3372093023255813">
+            <a href="https://tenor.com/view/cat-loading-error-angry-fuck-gif-8985245">Cat Loading GIF</a> from <a href="https://tenor.com/search/cat-gifs">Cat GIFs</a>
+        </div>
+    </div>
     <script src="Scripts/jquery-3.3.1.min.js"></script>
     <script src="Scripts/umd/popper.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -68,20 +58,24 @@
                 $('#divError').hide('fade');
             });
 
-            $('#btnRegister').click(function () {
+            $('#btnLogIn').click(function () {
                 $('#divError').hide('fade');
+                $('#loadingGif').show();
                 $.ajax({
-                    url: '/api/account/register',
+                    url: '/token',
                     method: 'POST',
+                    contentType: 'application/json',
                     data: {
-                        email: $('#txtEmail').val(),
+                        username: $('#txtUsername').val(),
                         password: $('#txtPassword').val(),
-                        confirmPassword: $('#txtConfirmPassword').val()
+                        grant_type: 'password'
                     },
-                    success: function () {
-                        $('#successModal').modal('show');
+                    success: function (response) {
+                        sessionStorage.setItem('accessToken', response.access_token);
+                        window.location.href = "Data.html";
                     },
                     error: function (err) {
+                        $('#loadingGif').hide();
                         $('#divErrorText').text(err.responseText);
                         $('#divError').show('fade');
                     }

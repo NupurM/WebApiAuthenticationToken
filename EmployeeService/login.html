@@ -15,20 +15,20 @@
         <table class="table table-bordered">
             <thead>
                 <tr class="bg-success text-light">
-                    <td colspan="2">
+                    <th colspan="2">
                         Existing User Login
                         <a class="btn btn-outline-light float-right" href="Register.html">Register</a>
-                    </td>
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Username</td>
-                    <td><input type="text" id="txtUsername" class="form-control" placeholder="Username" /></td>
+                    <td><input type="text" id="txtUsername" class="form-control" placeholder="Username" value="user2@gmail.com" /></td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type="password" id="txtPassword" class="form-control" placeholder="Password" /></td>
+                    <td><input type="password" id="txtPassword" class="form-control" placeholder="Password" value="NewUser1!"/></td>
                 </tr>
                 <tr class="bg-success">
                     <td colspan="2">
@@ -71,6 +71,7 @@
                         grant_type: 'password'
                     },
                     success: function (response) {
+                        $('#loadingGif').hide();
                         sessionStorage.setItem('accessToken', response.access_token);
                         window.location.href = "Data.html";
                     },

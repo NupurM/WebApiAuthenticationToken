@@ -3,8 +3,115 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .loading-gif {
+            width: 200px;
+            display: none;
+        }
+    </style>
 </head>
-<body>
-    Hello world!
+<body class="container">
+    <div class="col-sm-10 offset-1">
+        <button type="button" id="btnLoadEmployees" class="btn btn-outline-success">Load Employees</button>
+        <button type="button" id="btnLogOut" class="btn btn-outline-success float-right">Log Out</button>
+        <br />
+        <br />
+        <table id="tbl" class="table table-bordered d-none">
+            <thead>
+                <tr class="bg-success text-light">
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody id="tblBody"></tbody>
+        </table>
+        <div class="modal fade" tabindex="-1" id="errorModal"
+             data-keboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Session Expired</h4>
+                        <a href="Login.html" class="close">&times;</a>
+                    </div>.
+
+                    <div class="modal-body">
+                        <h2>Please close this message to login again.</h2>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="Login.html" class="btn btn-success">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divError" class="alert alert-danger collapse">
+            <a id="linkClose" class="close" href="#">&times;</a>
+            <div id="divErrorText">Error</div>
+        </div>
+    </div>
+    <div id="loadingGif" class="loading-gif">
+        <div class="tenor-gif-embed" data-postid="8985245" data-share-method="host" data-width="100%" data-aspect-ratio="1.3372093023255813">
+            <a href="https://tenor.com/view/cat-loading-error-angry-fuck-gif-8985245">Cat Loading GIF</a> from <a href="https://tenor.com/search/cat-gifs">Cat GIFs</a>
+        </div>
+    </div>
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/umd/popper.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            if (sessionStorage.getItem('accessToken') == null) {
+                window.location.href = 'Login.html';
+            }
+
+            $('#btnLoadEmployees').click(function () {
+                $('#divError').hide('fade');
+                $('#loadingGif').show();
+                $.ajax({
+                    url: '/api/employees',
+                    method: 'GET',
+                    contentType: 'application/json',
+                    headers: {
+                        authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
+                    },
+                    success: function (data) {
+                        $('#loadingGif').hide();
+                        $('#tblBody').empty();
+                        $('#tbl').removeClass('d-none');
+                        $.each(data, function (index, value) {
+                            var row = '<tr><td>' + value.ID +
+                                '</td><td>' + value.FirstName +
+                                '</td><td>' + value.LastName +
+                                '</td><td>' + value.Gender +
+                                '</td><td>' + value.Salary + '</td>';
+                            $('#tblBody').append(row);
+                        });
+                    },
+                    error: function (err) {
+                        $('#loadingGif').hide();
+                        if (err.status == "401") {
+                            $('#errorModal').modal('show');
+                        } else {
+                            $('#divErrorText').text(err.responseText);
+                            $('#divError').show('fade');
+                        }
+                    }
+                });
+            });
+
+            $('#btnLogOut').click(function () {
+                sessionStorage.removeItem('accessToken');
+                window.location.href = 'Login.html';
+            });
+        });
+    </script>
 </body>
 </html>
